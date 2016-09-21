@@ -1,0 +1,234 @@
+---
+title: "crasch Tutorial 1 - Talking to R"
+author: "Amy E. Arneson"
+date: "Fall 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+## Objectives
+
+- Understand the format of the tutorial documents.
+- Run commands in `R` directly in the console.
+- Run commands in `R` from a script.
+- Install the `crasch` package.
+- Set a working directory.
+- Check that everything has been installed correctly on your system.
+- View sample output from your working directory.
+- Access a documentation (help files) within RStudio.
+
+## Format of tutorial materials
+
+"Code chunks" appear in grey boxes throughout these materials.  These represent 
+*verbatim* the code that you will use in `R`, either in the console or in a 
+script.
+
+```{r}
+# Anything behind a pound sign is a comment
+# Use these to leave notes to your future self or others
+##########################################################
+### or to break up sections of code
+
+# Comments can exist on their own line
+1 + 1 # or at the end of a line of code
+```
+
+Output is printed under the code chunk.  As we go along, compare your output to 
+that shown in these materials.
+
+## Please note...
+
+Objectives for future tutorials
+
+- Learn to format your own input files.
+- Read input files into `R`.
+- Change/customize arguments of the `crasch` functions.
+- Interpret output.
+
+If you have questions regarding these objectives, you can:
+
+- Check out the slides and sample script files on bCourses for future tutorials.
+- See Amy or Yukie during office hours.
+- Save questions for future tutorials during class time (parking lot).
+
+# RStudio
+
+```{r, out.width = 800, fig.retina = NULL, echo = FALSE}
+knitr::include_graphics("/Users/amy/OneDrive/Development/crasch-materials/figures/RStudio-over.png")
+```
+
+The *console* is where you will input *commands*.
+
+You open *scripts* in the *Source Window*.
+
+- An R script is like a Stata do file.
+- You can save and re-run commands straight from the script.
+
+## Running commands in the console
+
+Type directly into the console.  At the end of each line, press *Enter*.
+
+```{r}
+14 + 9
+
+x = 9
+14 + x
+
+y = c(9, -9)
+14 + y
+```
+
+## Running commands from a script
+
+Open a *new*, blank script by clicking on the top left icon (green + sign over 
+a white rectangle) and choosing "R Script."
+
+Type the following commands into the script file.
+
+```{r, eval = FALSE}
+14 + 11
+
+x = 11
+14 + x
+
+y = c(11, -11)
+14 + y
+```
+
+Run a single line of code by placing the cursor anywhere on that line and 
+clicking "Run" in the top right corner.
+
+Run multiple lines by highlighting and clicking "Run."
+
+# The `crasch` package
+
+Note that `R` is a *case sensitive* language, so type exactly as shown.
+
+## Installing `crasch`
+
+```{r, eval = FALSE}
+# This first package allows you to install from github
+install.packages("devtools")
+library(devtools)
+
+# Now, install crasch
+install_github("amyarneson/crasch")
+# This may take a few minutes; multiple packages will be installed
+# You may see some warning messages, and that's okay!
+# You only need to install the package once...
+  # ...unless you are instructed to update/re-install by Yukie or 
+  # Amy in the future!
+```
+
+## Loading the `crasch` package
+
+```{r}
+library(crasch)
+# This "opens" the crasch package within your R session
+# You will need to run the library() command each time you open R
+# A few messages and warnings are expected
+```
+
+## Setting your working directory
+
+`crasch` will save output to any folder on your computer, but you must tell it 
+which folder!
+
+- Click the 'Files' tab of the bottom right window in RStudio.
+- Click the '...' button located on the right side.
+- Navigate to your chosen folder and open it.
+- Click the 'More' button and choose 'Set as working directory.'
+
+Alternately, you can set your working directory with the function `setwd()` if 
+you know the complete path to that folder.  Be sure to include quotation marks!
+
+```{r, eval = FALSE}
+setwd("/Users/Amy/Desktop/project")   # OSX
+setwd("C:/Users/Amy/Desktop/project") # Windows
+```
+
+## Running a crasch analysis
+
+Run a test analysis using data that is provided with the package install.  This 
+data is called `SUP` because it represents the level of **sup**port of teachers 
+regarding the adoption of a school-wide writing rubric.  (This data is from 
+Amy's class project.)
+
+```{r, message = FALSE}
+# It is important to store the results in an R object
+tutorial1 = craschR(SUPwide, itemInfo = SUPitem, consInfo = SUPcons, 
+                    estPackage = "TAM", writeout = TRUE)
+```
+
+- `tutorial1` is the *object* that stores all of the estimation information
+- `craschR()` is the *function*
+- everything inside the parentheses are called *arguments* to the function
+
+## Viewing ouput
+
+Because we used `writeout = TRUE`, new files that contain the results of your 
+analysis should now be in your working directory.
+
+These are saved as CSVs and can be viewed using Excel or your favorite 
+spreadsheet program.
+
+You can also view the results in `R`.
+
+```{r}
+names(tutorial1)
+```
+
+To view your results in the console, use `$`.
+
+```{r}
+tutorial1$persPars
+```
+
+## Creating and viewing plots/graphs
+
+You will likely use plots to display your analysis results.
+
+```{r, message = FALSE}
+wm(tutorial1)
+```
+
+The Wright Map should show in the Plots tab.  Click the Zoom button to open it 
+in a larger window.
+
+## Saving plots/graphs
+
+You can save the plot as an image using the RStudio menus within the Plots tab.
+
+Alternatively, use `writeout = TRUE` and specify an file type and it will be 
+written to your working directory.  You can then include the image in 
+presentation slides or other documents.
+
+```{r, eval = FALSE}
+wm(tutorial1, writeout = TRUE, imageType = "png")
+```
+
+# Accessing documentation / help files
+
+You can view documentation in RStudio using "`?`"
+
+```{r, eval = FALSE}
+?crasch
+?craschR
+```
+
+# Closing
+
+Upcoming:
+
+- Tutorial 2 - Input files
+    + Provides templates for your input files.
+    + Practice creating an input file in the proper CSV file format.
+- Tutorial 3 - A full `crasch` analysis
+    + Overview of all `crasch` functions.
+    + Practice generating and interpreting output.
+
+Please let Amy or Yukie know if you had any trouble running any of the commands 
+from today's tutorial.

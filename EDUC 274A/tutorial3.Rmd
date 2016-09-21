@@ -1,0 +1,430 @@
+---
+title: "crasch Tutorial 3 - A Full `crasch` Analysis"
+author: "Amy E. Arneson"
+date: "Fall 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+# Objectives
+
+This tutorial uses sample data files, though you are welcome to use your own
+files if you have created them.  For specific instructions and templates for 
+creating the input files, return to Tutorial 2.
+
+- Import correctly formatted input files.
+- Become familiar with the options for the arguments of the `craschR()` function.
+- Run post-estimation visualizations and functions.
+- Become familiar with the options for the arguments of the post-estimation
+functions.
+- Practice interpreting output.
+
+# `crasch` functions
+
+*Open RStudio, load the `crasch` package, and set your working directory.*
+If you have not installed the `crasch` package, return to Tutorial 1.
+
+```{r, eval = FALSE}
+library(crasch)
+setwd("C:/Users/Amy/Desktop/SUP") # for Windows
+setwd("/Users/Amy/Desktop/SUP")   # for OSX
+```
+
+```{r, include = FALSE}
+library(crasch)
+```
+
+## `craschR()`
+### Run Rasch family analysis on response data
+
+```{r craschR, message = FALSE}
+?craschR # look at the help file for the function
+  # The most relevant arguments to change for our purposes are:
+  #    persMethod
+  #    writeout
+  #    fileSuffix
+```
+
+First, we need to load the data.  Sample data files are provided in the
+  `Tutorial3-documents` folder on bCourses.
+
+We will use the "Level of Support" construct from the same study described in
+  Tutorial 2.
+  
+```{r dataImport, eval = FALSE}
+SUPcons = read.csv("SUPcons.csv", stringsAsFactors = FALSE)
+SUPitem = read.csv("SUPitem.csv", stringsAsFactors = FALSE)
+SUPscores = read.csv("SUPwide.csv", row.names = 1, stringsAsFactors = FALSE)
+SUPvars = read.csv("SUPvars.csv", row.names = 1, stringsAsFactors = FALSE)
+
+# You can view these objects within RStudio to makes sure that they are formatted correctly.
+# Always check to make sure the row names aren't imported as a variable column!
+```
+
+```{r, include = FALSE}
+SUPcons = SUPcons
+SUPitem = SUPitem
+SUPscores = SUPwide
+SUPvars = SUPvars
+```
+
+Let's run the TAM analysis and play with some of the arguments.
+
+```{r analysis, message = FALSE}
+# The default analysis, without writing output to a file
+SUPanalysis = craschR(scores = SUPscores, itemInfo = SUPitem, 
+                      consInfo = SUPcons, varsInfo = SUPvars, writeout = FALSE)
+
+########################### PERSON ESTIMATION METHOD ###########################
+# The default person estimation method is EAP
+# You can also obtain MLEs or WLEs
+SUP_MLE = craschR(scores = SUPscores, itemInfo = SUPitem, consInfo = SUPcons,
+                  varsInfo = SUPvars, persMethod = "MLE", writeout = FALSE)
+SUP_WLE = craschR(scores = SUPscores, itemInfo = SUPitem, consInfo = SUPcons,
+                  varsInfo = SUPvars, persMethod = "WLE", writeout = FALSE)
+
+# View the different estimates in a table
+cbind(SUPanalysis$persPars, SUP_MLE$persPars, SUP_WLE$persPars)
+
+############################ FILE WRITEOUT OPTIONS #############################
+
+# Note that writeout=TRUE is the default *only* for craschR
+SUPanalysis = craschR(scores = SUPscores, itemInfo = SUPitem, 
+                      consInfo = SUPcons, varsInfo = SUPvars)
+SUP_MLE = craschR(scores = SUPscores, itemInfo = SUPitem, consInfo = SUPcons,
+                  varsInfo = SUPvars, persMethod = "MLE", fileSuffix = "MLE")
+SUP_WLE = craschR(scores = SUPscores, itemInfo = SUPitem, consInfo = SUPcons,
+                  varsInfo = SUPvars, persMethod = "WLE", fileSuffix = "WLE")
+# Check your working directory to see the different files
+
+# Note that R will overwrite files with the same name.  Use "fileSuffix" to
+#  differentiate between different runs of the same or different data.
+```
+
+## `item.scores()`
+### Produce tables and graphs for the score distribution by item
+
+```{r item.scores, message = FALSE, results = "hide"}
+?item.scores
+# The most relevant arguments to change for our purposes are:
+  #    freqs
+  #    palette
+  #    imageType
+
+item.scores(SUPanalysis)
+
+# To graph proportions instead of frequencies, use freqs = FALSE
+item.scores(SUPanalysis, freqs = FALSE)
+
+```
+
+Check out the Color Brewer website.  It is really helpful in determining color
+palettes in general for presentations.  They even have color-blind-friendly
+palettes if you want to make a fully-accessible presentation!
+
+[colorbrewer2.org](colorbrewer2.org)
+
+The `RColorBrewer` package pulls this information from the Color Brewer website.
+Each color scheme has a name.  You can then put that scheme name into the
+`palette` argument in a `crasch` graphic function.
+
+```{r colorBrew, message = FALSE, results = "hide"}
+display.brewer.all() # creates a graphic with the palettes displayed + names
+
+item.scores(SUPanalysis, palette = "Set2")
+
+item.scores(SUPanalysis, palette = "Reds")
+```
+
+```{r item.scoresWrite, eval = FALSE}
+######################## GRAPHIC FILE WRITEOUT OPTIONS #########################
+
+# PDF is the default file type, but can be difficult to work with in MS Office
+item.scores(SUPanalysis, writeout = TRUE)
+item.scores(SUP_MLE, writeout = TRUE, fileSuffix = "MLE")
+
+# PDF is a vectorized graphic type which makes it ideal if you are going to
+#   include on a poster or other professional presentation medium.  SVG graphics
+#   are also vectorized.  Talk to Amy if you have a Mac and want to use SVG;
+#   extra software is required.
+
+# PNG is a lower-quality graphic, but is easily inserted in MS doc & ppt files
+item.scores(SUPanalysis, writeout = TRUE, imageType = "png")
+
+# JPEG, Bitmap, and TIFF graphics are also supported
+item.scores(SUPanalysis, writeout = TRUE, imageType = "jpeg")
+item.scores(SUPanalysis, writeout = TRUE, imageType = "bmp")
+item.scores(SUPanalysis, writeout = TRUE, imageType = "tiff")
+```
+
+## `pers.hist()`
+### Produce a histogram of the estimated person locations with a normal curve overlaid
+
+```{r pers.hist, results = "hide", message = FALSE}
+?pers.hist
+
+pers.hist(SUPanalysis)
+```
+
+You can change the colors and the write options as above.
+
+```{r pers.hist2, eval = FALSE}
+pers.hist(SUPanalysis, palette = "Spectral")
+# You can also specify any 2 R colors in a vector
+  pers.hist(SUPanalysis, palette = c("red", "darkred"))
+# Graphical output omitted
+
+# Graphic options
+pers.hist(SUPanalysis, writeout = TRUE, imageType = "png")
+```
+
+For a list of R color names: [http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf)
+
+## `KIDMAP()`
+### Produce a KIDMAP graphic for a given respondent
+
+```{r KIDMAP}
+?KIDMAP
+# For the KIDMAP function you must specify a respondent ID!
+# Look at the list of your IDs:
+row.names(SUPscores)
+
+KIDMAP(SUPanalysis, 120)
+```
+
+You can change the colors and the write options as above.
+
+```{r KIDMAP2, eval = FALSE}
+KIDMAP(SUPanalysis, 120, palette = "Spectral")
+# You can also specify any 3 R colors in a vector
+  KIDMAP(SUPanalysis, 147, palette = c("darkred", "red", "black"))
+# Graphical output omitted
+
+# Graphic options
+KIDMAP(SUPanalysis, 120, palette = "PuBu", writeout = TRUE, imageType = "png")
+KIDMAP(SUP_MLE, 120, palette = "PuBu", writeout = TRUE, imageType = "png",
+       fileSuffix = "MLE")
+```
+
+## `item.analysis()`
+### Produce by item and by step tables
+
+```{r item.analysis, message = FALSE, eval = FALSE}
+?item.analysis
+
+item.analysis(SUPanalysis)
+
+item.analysis(SUPanalysis, writeout = TRUE)
+```
+
+Truncated output:
+
+```{r item.analysis2, echo = FALSE, message = FALSE}
+head(item.analysis(SUPanalysis)[[1]])
+head(item.analysis(SUPanalysis)[[2]])
+```
+
+## `infit.MNSQ()`
+### Produce a graphic of item fit statistics
+
+```{r infitMNSQ, message = FALSE}
+?infit.MNSQ
+
+# The most relevant arguments to change for our purposes are:
+  #    itemOrder
+  #    params
+
+infit.MNSQ(SUPanalysis)
+
+# To plot the step fit instead of the overall item fit:
+infit.MNSQ(SUPanalysis, params = "steps")
+
+# To restrict which items are plotted on each graph:
+infit.MNSQ(SUPanalysis, itemOrder = c(1, 2, 3, 4, 5, 6, 7), params = "steps")
+infit.MNSQ(SUPanalysis, itemOrder = 8:15, params = "steps")
+```
+
+You can change the colors and the write options as above.
+
+```{r infitMNSQ2, eval = FALSE}
+infit.MNSQ(SUPanalysis, itemOrder = 8:15, palette = "Spectral")
+# Graphical output omitted
+
+infit.MNSQ(SUP_MLE, writeout = TRUE, fileSuffix = "MLE", imageType = "tiff")
+```
+
+## `CPC.graph()`
+### Produce graphics of cumulative probability curves
+
+```{r CPC.graph, eval = FALSE}
+?CPC.graph
+
+# The most relevant arguments to change for our purposes are:
+  #    itemOrder
+  #    observed
+  #    minCell
+  #    focusTheta
+
+CPC.graph(SUPanalysis) # Note that a separate graph is produced for each item
+# Graphical output omitted
+```
+
+```{r CPC.graph2, message = FALSE}
+# To selectively produce graphs use itemOrder
+CPC.graph(SUPanalysis, itemOrder = c(1, 15))
+
+# To plot your observed proportions, use observed and minCell
+CPC.graph(SUPanalysis, itemOrder = 15, observed = TRUE)
+CPC.graph(SUPanalysis, itemOrder = 15, observed = TRUE, minCell = 3)
+```
+
+You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
+
+## `ICC.graph()`
+### Produce graphics of the item (or category) characteristic curves
+
+```{r ICC.graph, eval = FALSE}
+?ICC.graph
+
+ICC.graph(SUPanalysis) # produces a graph for each item
+# Graphical output omitted
+```
+
+```{r ICC.graph2, message = FALSE}
+# itemOrder works as in the CPC.graph() function
+ICC.graph(SUPanalysis, itemOrder = c(5:6))
+```
+
+You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
+
+## `info.graph()`
+### Produce graphics of test and item information
+
+```{r info.graph, message = FALSE}
+?info.graph
+
+# The most relevant arguments to change for our purposes are:
+  #    type
+  #    completeOnly
+
+info.graph(SUPanalysis, type = "SEM")  # SEM is the default
+info.graph(SUPanalysis, type = "TIC")  # produces one graph
+```
+
+```{r info.graphSEM, eval = FALSE}
+info.graph(SUPanalysis, type = "IIC")  # produces one graph for each item
+# Graphical output omitted
+
+# The plotted points are observed thetas.
+```
+
+You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
+
+## `wm()`
+### A wrapper for the `wrightMap()` function
+
+```{r wm, message = FALSE}
+?wm
+# The most relevant argument to change for our purposes is:
+  #    byCat
+
+wm(SUPanalysis) # organized in item order
+
+wm(SUPanalysis, byCat = TRUE) # organized in construct category order
+```
+
+You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
+
+If you want to customize the output further, see the `wrightMap()` function 
+  documentation.  The function provided in this package is merely a wrapper.
+  
+```{r wrightMap, eval = FALSE}
+?wrightMap
+```
+
+## `Split.halves()`
+### Calculate the split halves reliability coefficient
+
+```{r split.halves, message = FALSE}
+?Split.halves # be sure to use a capital S
+
+# You will need to run craschR() twice before running Split.halves().
+# You can either make new item and score files for each run, or manipulate 
+#    existing objects in R.
+
+# If you want to do this in R, you can use the following code as a template.
+#    Note that you only have to change the item and score objects.  The
+#    construct information is the same for both.  The variable object is not
+#    relevant, so you don't have to worry about that at all.
+item1 = SUPitem[c(2, 5, 7, 8, 10, 11, 15), ]      # selects rows
+scores1 = SUPscores[ , c(2, 5, 7, 8, 10, 11, 15)] # selects columns
+
+item2 = SUPitem[c(1, 3, 4, 6, 9, 12, 13, 14), ]
+scores2 = SUPscores[ , c(1, 3, 4, 6, 9, 12, 13, 14)]
+
+### Make sure each item is included in only 1 of the halves! ###
+
+# Use the same persMethod that you did for the original analysis
+results1 = craschR(scores1, item1, SUPcons, writeout = FALSE)
+results2 = craschR(scores2, item2, SUPcons, writeout = FALSE)
+
+Split.halves(results1, results2)
+```
+
+## `mn.traj()`
+### Produce a graphic showing mean location trajectories by item
+
+```{r mn.traj, message = FALSE}
+mn.traj(SUPanalysis)
+```
+
+You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
+
+Note that the graphic is only a *summary* of the mean trajectories.  For your
+  papers, look at the mean locations within each item in the table provided
+  by this function or the one from `item.analysis()` (they should be identical).
+
+## `Sp.rho()`
+### Calculate Spearman's rho
+
+```{r Sp.rho, message = FALSE}
+?Sp.rho
+
+# For this, we will use some sample data that is fully dichotomous included in
+#   the package.  There are 14 items.
+
+DIresults = craschR(scores = DIwide, itemInfo = DIitem, consInfo = DIcons)
+
+Sp.rho(DIresults, expOrder = c(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
+```
+
+Note that Spearman's Rho is most easily interpretable for dichotomous data.  If
+  you have polytomous data, consider something different for internal structure.
+
+# Other (base `R`) functions
+
+## `cor(method = "pearson")` 
+### Use for calculating correlations with continuous external variables
+
+This is a base `R` function that calculates correlation.  You are welcome to
+  use Excel or any other spreadsheet/stats program to calculate simple 
+  correlations between your estimated thetas and external variables.
+
+```{r correlate, message = FALSE}
+?cor
+
+# Note that this code will only work if the respondents are in the same order in
+#   your scores object and your vars object.
+
+View(SUPvars)
+# q3 is the number of years of teaching experience of the respondent
+
+names(SUPanalysis)   # to see what stored results there are
+SUPanalysis$persPars # to view the person estimates
+
+cor(SUPvars$q3, SUPanalysis$persPars, use = "complete.obs")
+# "complete.obs" is necessary so that missing data is dropped
+```

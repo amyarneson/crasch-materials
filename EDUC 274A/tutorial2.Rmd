@@ -1,0 +1,281 @@
+---
+title: "crasch Tutorial 2 - Input Files"
+author: "Amy E. Arneson"
+date: "Fall 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+# Objectives
+
+You should have already installed the software (`R`, RStudio, and the `crasch` 
+package).  If you have not, return to the Introduction and Tutorial 1.
+
+- Receive sample data files to use as templates for your own study.
+- Create an item information data file in the proper CSV format.
+- Import the data files into an `R` session.
+- Run the `craschR()` function on the imported data.
+
+## Tutorial data
+
+For this tutorial, we will use the ADP data.  This was a construct developed
+  for a study of teacher adoption of a cross-curricular writing "program" in a
+  Missouri public high school in 2013.
+
+Stage of adoption (abbreviated ADP) was 1 of 2 constructs measured for Amy's
+  274A class project.  Information about the construct, the items, the scoring,
+  and the demographics collected can be found in the Tutorial2-documents folder
+  on bCourses.  All of the input file samples can also be found there.
+
+*Create a folder called ADP on your desktop.  Download all of the files from the
+  `Tutorial2-documents` into this folder.*
+
+# CSV files
+
+You will need to create 3 input files to run your analysis.  You may create an
+  optional 4th file if you are collecting variables other than item responses.
+  The files are as follows:
+  
+- construct information (`consInfo`),
+- item information (`itemInfo`),
+- scored responses (`scores`), and
+- external variables (optional, `varsInfo`).
+
+All of the files must be saved in the comma separated values (CSV) format.
+  CSVs are editable in text editors (TextEdit, Notepad) or spreadsheet programs
+  (Excel, Google Sheets, Numbers).  In most of these applications, you will
+  need to explicitly specify to "save as CSV" as it is not the default file
+  type.
+  
+It is important that your files are structured and labeled (column headings)
+  exactly as shown in this tutorial and in the sample data files.  We recommend
+  using these files as templates for your own data files.  `crasch` will return
+  an error if there are issues with the struction or labeling of your files.
+
+## Construct information
+
+Your construct information file will have:
+
+- a header row, 
+- 1 row for each construct, and
+- 3 + (number of categories) columns.
+
+*Open the `ADPcons.csv` file.*
+
+Confirm that the information displayed matches the table below.
+
+cons.ID | long.name         | short.name | cat1     | cat2      | cat3    | cat4        | cat5
+--------|-------------------|------------|----------|-----------|---------|-------------|----------
+22222   | Stage of Adoption | ADP        | informed | persuaded | decided | implemented | confirmed
+
+*Open the `artifacts-adoption.pdf` file.*  Confirm that the construct and 
+  category naming matches what is shown in that file.
+
+- You will have as many `cat` columns as you have categories/levels of your 
+  construct.  It is best to keep the names short.  If you do not name your
+  categories, you can simply call them "Level 1", "Level 2", etc. if you wish.
+- The `cons.ID` can be any positive integer.
+- When you create your own files, it is imperative that the column headings
+  exactly match what is provided in this file.  `R` is a case-senstive language,
+  so the capitalization matters!
+- If you have more than one construct, give each its own row in the your construct
+  information file and each a unique `cons.ID`.  (See Yukie or Amy if you are 
+  planning to measure more than one construct.  It is not necessary for the 
+  class to do so.)
+
+## Item information
+
+*Open the `artifacts-adoption.pdf` and `ADPitem-INCOMPLETE.csv` files.*
+
+- Note that the `cons.ID` exactly matches what was specified in the 
+  `ADPcons.csv` file.  If you are measuring more than one construct, you will 
+  put in the ID associated with whatever construct that item was scored on.
+- The `item.type` and `fixed` will not play any part in your analysis.  These 
+  exist for integration with the BASS web application.  You can fill in 
+  `item.type` for your own records if you want.  The `fixed` column should be
+  `FALSE` for all items.  These columns do need to exist in the file, however.
+- Fill in `TRUE` (all caps) if the category exists in your outcome space/scoring
+  guide.  Fill in `FALSE` if it is not in your outcome space.  *The first two
+  rows of the file have been filled out for you.  Compare the T/F designation
+  to the outcome space tables below.*
+
+item.ID | item.name | cons.ID | item.type | fixed | cat1 | cat2 | cat3 | cat4 | cat5
+--------|-----------|---------|-----------|-------|------|------|------|------|------
+1       | q8        | 22222   | MC        | FALSE | TRUE | TRUE | TRUE | TRUE | TRUE
+2       | q12       | 22222   | FR        | FALSE | TRUE | TRUE | TRUE | TRUE | FALSE
+
+```{r, out.width = 800, fig.retina = 1, echo = FALSE}
+knitr::include_graphics("/Users/Amy/OneDrive/Development/crasch-materials/figures/ADP-scoringGuide.PNG")
+```
+
+*Take 5 minutes to fill in the rest of the rows of the file using the outcome
+  space tables provided in the `artifacts-adoption.pdf` file.  When finished,
+  compare what you built to the `ADPitem-KEY.csv` file.*
+
+*Save your completed item information as `ADPitem.csv` in the same folder.  Be
+  sure to change the file type to `CSV` in the "Save As" dialog box.*
+
+## Scored responses
+
+*Open the `ADPwide.csv` file.*  The scores for the first three respondents are
+  reproduced below.
+
+.   | q8 | q12 | q13 | q14 | q15 | q16 | q17 | q18 | q19 | q29 | q31 | q33 | q34
+----|----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----
+110 | 4  | 4   | 4   | 5   | 5   | 5   | 5   | 5   | 4   | 5   | 5   | 5   | 4
+111 | 3  | 1   | 2   | 4   | 2   | 5   | 5   | 5   | 4   | NA  | NA  | NA  | NA
+112 | 3  | 3   | 3   | 4   | 2   | 4   | 3   | 4   | 4   | NA  | NA  | NA  | NA
+
+- Give unique respondent IDs (alphanumeric characters) in the first column.
+  List your items - with the same names that appear in your item information
+  file - in the top header row.  Leave the top left corner cell *completely
+  blank*.  This configuration is known as *wide format*.
+- Score each response into a category/level of your construct according to your
+  outcome space.  *If your outcome space changes during scoring, be sure to 
+  update your item information to reflect that!*
+- Recall that categories are labeled starting at 1.  There should be no 0 scores
+  or scores higher than your highest category/level.
+- Blanks or otherwise unscore-able responses must be coded as `NA` (all caps).
+  This is the `R` code for "missing", similar to the period in Stata.
+
+## Variable information
+
+The variable information file is the most flexibly structured file.  The values
+  for the first three respondents in the `ADPvars.csv` file are reproduced
+  below.
+
+- `q1` is a code for the subject that the teacher taught in 2013.
+- `ELA/SS` is a dichotomized coding for q1.  I decided that English-Language 
+  Arts (ELA) and Social Studies (SS) teachers would be most familiar with 
+  teaching and scoring writing assignments.  So, I put them in one group and 
+  everyone else in "other."
+- `CORE` is another dichotomization of q1.  The state-tested subjects (math and
+  ELA) were labeled "core subjects" and all other subjects as "non-core".
+- `q2` is the number of years of teaching experience.
+- `experience` is a dichotomization of q2.  The two groups were teachers who
+  have been teaching 5 years or less ("<= 5") or 6 or more ("6+")
+- `q3` is the number of years the teacher has taught in the district.
+- `tenure Y/N` is a dichotomization of q3.  Any teacher who has taught more than
+  5 years in district automatically has tenure in the state of Missouri ("Y").
+  All others do not have tenure ("N").
+- `only job` is a dichotomization of q2 & q3.  If the number of years of 
+  experience was equal to the number of years in district, then their current
+  job has been their only teaching job.
+
+.   | q1 | ELA/SS | CORE | q2 | experience | q3 | tenure Y/N | only job
+----|----|--------|------|----|------------|----|------------|----------
+110 | 2  | ELA/SS | core | 7  | 6+         | 7  | Y          | Y
+111 | 9  | other  | core | 30 | 6+	       | 7  | Y          | N
+112 | 6  | ELA/SS | core | 9  | 6+         | 6  | Y          | N
+
+- Make sure the respondent IDs in the first column exactly match those in your
+  scores file.
+- The variable names and values can be *anything*.  If you are dichotomizing,
+  make sure that all group names match exactly.  A typo or difference in case
+  will be interpreted as a different group.
+
+# Importing the files into `R` using `read.csv()`
+
+To load your files into `R`, you will need to create an "object" and then refer
+  to those objects in the `craschR()` arguments.  *Arguments* are the options 
+  and objects that you put inside the parentheses in an `R` function.
+
+*Open RStudio.*
+
+First, set your working directory to the folder where all of the tutorial
+  documents exist.  You can do this using the "Files" tab in the bottom right
+  window in RStudio or with a line of code.
+
+```{r, include = FALSE}
+library(crasch)
+ADPcons = ADPcons
+ADPitem = ADPitem
+ADPscores = ADPwide
+ADPvars = ADPvars
+```
+
+```{r importCSVs, eval = FALSE}
+setwd("C:/Users/Amy/Desktop/ADP") # for Windows
+setwd("/Users/Amy/Desktop/ADP")   # for OSX
+
+ADPcons = read.csv("ADPcons.csv", stringsAsFactors = FALSE)
+# Check to make sure that it is formatted correctly
+View(ADPcons) # or click on the object in the top right window of RStudio
+
+ADPitem = read.csv("ADPitem.csv", stringsAsFactors = FALSE)
+View(ADPitem)
+# This won't work if you didn't save a copy of ADPitem.csv earlier
+# If you did not, import ADPitem-KEY.csv instead
+
+ADPscores = read.csv("ADPwide.csv", row.names = 1, stringsAsFactors = FALSE)
+View(ADPscores)
+# You must include the row.names argument or the first column will be interpreted
+#   as a variable! You don't want that!
+
+ADPvars = read.csv("ADPvars.csv", row.names = 1, stringsAsFactors = FALSE)
+View(ADPvars)
+```
+
+Now, let's run a quick analysis to make sure everything is formatted and was
+  imported correctly.  You'll need to load the `crasch` library.  This will
+  only work if you installed the package in Tutorial 1.
+
+Your analysis also needs to be an object.  In the code below, I've named it
+  `ADPanalysis`.  Without doing this, you won't be able to run any of the 
+  post-estimation functions that create some of the tables and graphs you will 
+  need.
+
+```{r runningAnalysis}
+library(crasch)
+
+?craschR # check the help file for the argument syntax
+ADPanalysis = craschR(scores = ADPscores, itemInfo = ADPitem, consInfo = ADPcons,
+              varsInfo = ADPvars)
+```
+
+Let's run a post-estimation function, `item.scores()`.  This function will 
+  produce tables and a graphic showing score distributions by item.
+  
+```{r postEst}
+?item.scores # check the help file for the arguments
+item.scores(ADPanalysis) # runs the function with all defaults
+
+# to write the tables and graphic to a file
+item.scores(ADPanalysis, writeout = TRUE)
+
+# to change the colors in the graphic to grayscale
+item.scores(ADPanalysis, palette = "grey")
+
+# to plot proportions instead of frequencies
+item.scores(ADPanalysis, freqs = FALSE, palette = "grey")
+```
+
+# Closing
+
+- If you are getting errors or unexpected results, please see Amy or Yukie during
+  office hours.
+- In the next tutorial, we will cover all `crasch` functions.
+    + `item.scores()` produces tables and graphs for the score distribution by 
+      item
+    + `pers.hist()` produces a histogram of the estimated person locations with
+      a normal curve overlaid
+    + `KIDMAP()` produces a KIDMAP graphic for a given respondent
+    + `item.analysis()` produces by item and by step tables with estimates,
+      fit statistics, and classical statistics
+    + `infit.MNSQ()` produces a graphic of item fit statistics by item
+    + `CPC.graph()` produces graphics of the cumulative probability curves by 
+      item
+    + `ICC.graph()` produces graphics of the item (or category) characteristic
+      curves by item
+    + `info.graph()` produces graphics of the test and item information
+    + `wm()` a wrapper for the `wrightMap()` function
+    + `split.halves()` calculates the split halves reliability coefficient
+    + `mean.traj()` produces a graphic showing the mean location trajectories
+      of respondents by item
+    + `Sp.rho()` calculates Spearman's rho
+- There are some base `R` functions that we will also cover.
+    + `cor(method = "pearson")` for calculating correlations with continuous
+      external variables
