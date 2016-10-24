@@ -22,7 +22,7 @@ knitr::opts_chunk$set(cache = TRUE)
 
 ## Format of tutorial materials
 
-"Code chunks" appear in grey boxes throughout these materials.  These represent 
+"Code chunks" appear in grey boxes throughout the tutorials.  These represent 
 *verbatim* the code that you will use in `R`, either in the console or in a 
 script.
 
@@ -60,10 +60,12 @@ If you have questions regarding these objectives, you can:
 knitr::include_graphics("/Users/amy/OneDrive/Development/crasch-materials/figures/RStudio-over.png")
 ```
 
-The *console* is where you will input *commands*.
+The *console* is where you will type (or paste) *commands*.
 
 You open *scripts* in the *Source Window*.
 
+- File > New File > R Script (or click the button with the green + sign in the
+  top left corner)
 - An R script is like a Stata do file.
 - You can save and re-run commands straight from the script.
 
@@ -83,8 +85,7 @@ y = c(9, -9)
 
 ## Running commands from a script
 
-Open a *new*, blank script by clicking on the top left icon (green + sign over 
-a white rectangle) and choosing "R Script."
+Open a *new*, blank script.
 
 Type the following commands into the script file.
 
@@ -99,13 +100,15 @@ y = c(11, -11)
 ```
 
 Run a single line of code by placing the cursor anywhere on that line and 
-clicking "Run" in the top right corner.
+clicking "Run" in the top right corner.  (Note, however, if you *highlight* a 
+portion of a line, it will only run the highlighted bit.)
 
 Run multiple lines by highlighting and clicking "Run."
 
 # The `crasch` package
 
-Note that `R` is a *case sensitive* language, so type exactly as shown.
+Note that `R` is a *case sensitive* language, so type exactly as shown (OR use 
+copy/paste OR open the script file provided on bCourses.)
 
 ## Installing `crasch`
 
@@ -166,6 +169,15 @@ tutorial1 = craschR(SUPwide, itemInfo = SUPitem, consInfo = SUPcons,
 - `tutorial1` is the *object* that stores all of the estimation information
 - `craschR()` is the *function*
 - everything inside the parentheses are called *arguments* to the function
+
+You can name objects as you wish using alphanumeric characters (A-Z, a-z, 0-9), 
+underscores, and periods.  Some things to note:
+
+- it must start with a letter,
+- if you re-use a name, it will overwrite whatever is currently loaded in the
+  environment, and
+- these objects are saved to *working memory* which means they cannot be 
+  accessed again once you end your `R` session unless you explicitly save them.
 
 ## Viewing ouput
 

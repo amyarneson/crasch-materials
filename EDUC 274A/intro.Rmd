@@ -11,35 +11,43 @@ knitr::opts_chunk$set(cache = TRUE)
 
 # Objectives
 
-- Learn how to get the *free* software that will be used in this course
-- Download and install the software on your machine (this may be done after class)
+- Learn how to get the *free* `R` software that will be used in this course
+- Download and install the software on your machine (after class)
 
 # Introduction
 
 - What is `crasch`?
 
-    + `crasch` is an `R` package written to accompany *Constructing Measures* (Wilson, 2005).
-    + It is also the (future) reporting engine for the Berkeley Assessment System Software [http://bass.bearapps.org/](http://bass.bearapps.org/).
+    + `crasch` is an `R` package written to accompany *Constructing Measures* 
+      (Wilson, 2005).
+    + It is also the (future) reporting engine for the Berkeley Assessment 
+      System Software [http://bass.bearapps.org/](http://bass.bearapps.org/).
 
 - What is an `R` package?
 
-    + Freely available code for use in `R` written, maintained, and made available by an `R` user.
+    + Freely available code for use in `R` written, maintained, and made 
+      available by an `R` user.
 
 - What is `R`?
 
-    + `R` is free statistical software (Mac, PC, or Unix) for computing and graphic production.
+    + `R` is free statistical software (Mac, PC, or Unix) for computing and 
+       graphic production.
     + [https://www.r-project.org](https://www.r-project.org)
 
 ## Coding in `R`
 
-- `R` is a *functional* coding language which means that you will need to become familiar with the *functions* in the 'crasch' package.
+- `R` is a *functional* coding language which means that you will need to become 
+  familiar with the *functions* in the 'crasch' package.  To run analyses and 
+  produce graphics, you will work with lines of codes and functions, rather than 
+  clicking buttons (e.g.  Excel, SPSS).
 - You are not expected to have any coding experience in this course!
     + Tutorial scripts will be provided for you to adapt to your needs.
     + Both Yukie and Amy will offer support in readying and running your code.
 
 ## IRT in `R`
 
-Item response theory (IRT) requires specialized statistical analyses, and these types of functions are not included in the base `R` libraries.
+Item response theory (IRT) requires specialized statistical analyses, and these 
+types of functions are not included in the base `R` libraries.
 
 The following packages are well-documented and widely used for IRT analyses.
 
@@ -49,7 +57,8 @@ The following packages are well-documented and widely used for IRT analyses.
 - ltm (Rizopoulos, 2006)
 - **WrightMap** (Torres Irribarra \& Freund, 2014)
 
-Other statistical packages also support IRT analyses such as Stata, MPlus, ConQuest, Winsteps, SPSS, ...
+Other statistical packages also support IRT analyses such as Stata, MPlus, 
+ConQuest, Winsteps, SPSS, ...
 
 # Installing the software
 
@@ -62,13 +71,21 @@ Other statistical packages also support IRT analyses such as Stata, MPlus, ConQu
 
 - Download and install RStudio (for a much friendlier `R` experience!)
     + [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
-    + Choose your OS under "Installers" and proceed as you would with any software installation.
+    + Choose your OS under "Installers" and proceed as you would with any 
+      software installation.
+    
+- If you already have `R` on your machine, you may need to update to the latest 
+  version.  Use the links above to do so.
 
 ## XQuartz (for OSX)
 
-You are able to create SVG graphics in `R` using `crasch`.  If you are using OSX and you want the ability to create SVGs, you need to download one extra piece of software.  **If you don't care to create SVGs, don't worry about this!**
+You are able to create SVG graphics in `R` using `crasch`.  If you are using OSX 
+and you want the ability to create SVGs, you need to download one extra piece of 
+software.  **If you don't care to create SVGs, don't worry about this!**
 
-This blog post explains why this is needed and provides instructions for the install: [http://kshuler.com/blog/getting-svg-graphics-to-work-in-r-on-os-x/](http://kshuler.com/blog/getting-svg-graphics-to-work-in-r-on-os-x/)
+This blog post explains why this is needed and provides instructions for the 
+install: 
+[http://kshuler.com/blog/getting-svg-graphics-to-work-in-r-on-os-x/](http://kshuler.com/blog/getting-svg-graphics-to-work-in-r-on-os-x/)
 
 - download XQuartz from [http://xquartz.macosforge.org/](http://xquartz.macosforge.org/),
 - install as you would anything else,
