@@ -6,7 +6,9 @@ output: ioslides_presentation
 ---
 
 ```{r setup, include = FALSE}
+knitr::opts_chunk$set(cache = TRUE)
 
+library(crasch)
 ```
 
 # Introduction
@@ -68,7 +70,13 @@ The following packages are well-documented and widely used for IRT analyses.
 ## Demo materials
 
 - These slides, the associated RMarkdown file, and a script with all commands
-  are available at [https://github.com/amyarneson/crasch-materials/BEARseminar](https://github.com/amyarneson/crasch-materials/BEARseminar)
+  are available at [https://github.com/amyarneson/BEARseminar](https://github.com/amyarneson/BEARseminar)
+    
+    + Github will render the `.Rmd` file and you can view these slides on github
+      (just click on the `.Rmd` file!).
+    + You can also view the R script (the `.R` file) on github.
+    + To download materials: click the green "Clone or download" button and 
+      click "Download ZIP."
   
 ## Installing `crasch`
 
@@ -88,32 +96,440 @@ devtools::install_github("amyarneson/crasch")
 
 ## Input files
 
-## Installing/Updating the package
+There are 3 required input files to run your analysis and an optional 4th:
+  
+- construct information (`consInfo`)
+- item information (`itemInfo`)
+- scored responses (`scores`)
+- external variables (optional, `varsInfo`)
 
-## Current capabilities
+Each of these files must structured exactly as shown in this tutorial with the
+  correct column headings.  Sample data files are available at
+  [https://github.com/amyarneson/crasch-materials](https://github.com/amyarneson/crasch-materials)
+  
+*I will not be covering data files in detail today.  The above link has a 
+  tutorial devoted only to making the data files.*
+  
+## Input files, cont.
 
-## Future plans
+The package comes with sample data sets.
+
+The ADP data corresponds with a construct developed for a study of teacher 
+  adoption of a cross-curricular writing "program" in a Missouri public high 
+  school in 2013.
+  
+    + *A PDF with some more information about the construct and instrument is 
+      provided on github.*
+      
+    + It was Amy's 274A class project.
+
+```{r inputFiles, eval = FALSE}
+library(crasch)
+
+# You can view the input objects
+View(ADPcons) # Construct information input
+View(ADPitem) # Item information input
+View(ADPwide) # Scores in wide format
+```
 
 # Standard analysis: Demo
 
 ## Estimation
 
-## "Standard" output
+The main function for the package is `craschR()`.
 
-# Validity
+- This function calls `TAM` to perform estimation and then organizes the output
+  in a friendly way.
+  
+- Output can be saved to your working directory in CSV format using 
+  `writeout = TRUE`.
+  
+- Save the results as an R object so that they can be used in the 
+  post-estimation functions.
+  
+```{r analysis, eval = FALSE, message = FALSE}
+?craschR  # check out the argument options and description
 
-## Internal structure
+ADP = craschR(scores = ADPwide, itemInfo = ADPitem, 
+              consInfo = ADPcons, varsInfo = ADPvars, 
+              writeout = FALSE)
+```
 
-### Instrument level
+```{r analysis0, include= FALSE}
+ADP = craschR(scores = ADPwide, itemInfo = ADPitem, 
+              consInfo = ADPcons, varsInfo = ADPvars, 
+              writeout = FALSE)
+```
 
-Wright Map arranged by theorized construct levels
+## Estimation
 
-### Item level
+The default person estimation method is EAP.
 
-Mean locations
+You can also obtain MLEs or WLEs.
 
-### Item by group level
+```{r personOptions, eval = FALSE}
+ADP_MLE = craschR(scores = ADPwide, itemInfo = ADPitem, 
+                  consInfo = ADPcons, varsInfo = ADPvars, 
+                  persMethod = "MLE", writeout = FALSE)
+ADP_WLE = craschR(scores = ADPwide, itemInfo = ADPitem, 
+                  consInfo = ADPcons, varsInfo = ADPvars, 
+                  persMethod = "WLE", writeout = FALSE)
 
-DIF - not available yet :/
+# View the different estimates in a table
+cbind(ADP$persPars, ADP_MLE$persPars, ADP_WLE$persPars)
+```
 
-## External relationships
+## Estimation
+
+To access the output in your R session, use `$` with the name of the object you
+  want to view.
+
+```{r names}
+names(ADP)
+```
+
+See the `craschR()` help documentation for information on the format of each
+  element of the list.
+
+```{r viewingOutput, eval = FALSE}
+View(ADP$itemPars)
+View(ADP$persPars)
+ADP$estSummary
+```
+
+# Post-Estimation functions
+
+## `item.scores()`
+### Produce tables and graphs for the score distribution by item
+
+```{r item.scores, message = FALSE, results = "hide"}
+?item.scores
+item.scores(ADP)
+```
+
+## `item.scores()` cont.
+
+```{r item.scores2, message = FALSE, results = "hide"}
+# To graph proportions instead of frequencies, use freqs = FALSE
+item.scores(ADP, freqs = FALSE)
+```
+
+## `item.scores()` cont.
+
+Check out the Color Brewer website.  It is really helpful in determining color
+palettes in general for presentations.  They even have color-blind-friendly
+palettes if you want to make a fully-accessible presentation!
+
+[colorbrewer2.org](colorbrewer2.org)
+
+The `RColorBrewer` package pulls this information from the Color Brewer website.
+Each color scheme has a name.  You can then put that scheme name into the
+`palette` argument in a `crasch` graphic function.
+
+## `item.scores()` cont.
+
+```{r colorBrew, message = FALSE, results = "hide"}
+display.brewer.all() # creates a graphic with the palettes displayed + names
+```
+
+## `item.scores()` cont.
+
+```{r colorBrewOpts, message = FALSE, results = "hide"}
+item.scores(ADP, palette = "Reds")
+```
+
+## `item.scores()` cont.
+### Graphic file writeout options
+
+- PDF is the default file type, but can be difficult to work with in MS Office.
+
+- SVGs are also supported (note that extra software may be required).
+
+- PNGs, JPEGs, BMPs, and TIFFs are lower-quality graphics, but are easily 
+  inserted in MS doc & ppt files.
+
+
+```{r item.scoresWrite1, eval = FALSE}
+item.scores(ADP, writeout = TRUE, imageType = "png")
+item.scores(ADP, writeout = TRUE, imageType = "jpeg")
+item.scores(ADP, writeout = TRUE, imageType = "bmp")
+item.scores(ADP, writeout = TRUE, imageType = "tiff")
+```
+
+## `pers.hist()`
+### Estimated person locations with a normal curve overlaid
+
+```{r pers.hist, results = "hide", message = FALSE}
+?pers.hist
+pers.hist(ADP)
+```
+
+## `pers.hist()` cont.
+
+You can change the colors and the write options as shown before.
+
+```{r pers.hist2, eval = FALSE}
+pers.hist(ADP, palette = "Spectral")
+# You can also specify any 2 R colors in a vector
+  pers.hist(ADP, palette = c("red", "darkred"))
+```
+
+For a list of R color names: [http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf)
+
+## `KIDMAP()`
+### Produce a KIDMAP graphic for a given respondent
+
+```{r KIDMAP, message = FALSE}
+?KIDMAP
+# For the KIDMAP function you must specify a respondent ID!
+# To look at the list of your IDs:
+row.names(ADPwide)
+```
+
+## `KIDMAP()` cont.
+
+```{r KIDMAP2}
+KIDMAP(ADP, 120)
+```
+
+## `KIDMAP()` cont.
+
+You can change the colors and the write options as above.
+
+```{r KIDMAP3, eval = FALSE}
+KIDMAP(ADP, 120, palette = "Spectral")
+# You can also specify any 3 R colors in a vector
+  KIDMAP(ADP, 147, palette = c("darkred", "red", "black"))
+```
+
+## `item.analysis()`
+### Produce by item and by step tables
+
+```{r item.analysis, message = FALSE, eval = FALSE}
+?item.analysis
+
+item.analysis(ADP)
+```
+
+Truncated output (item table):
+
+```{r item.analysis2, echo = FALSE, message = FALSE}
+item.analysis(ADP)[[1]][1:3,]
+```
+
+## `item.analysis()` cont.
+
+Truncated output (step table): 
+
+```{r item.analysis3, echo = FALSE, message = FALSE}
+item.analysis(ADP)[[2]][1:3,]
+```
+
+## `infit.MNSQ()`
+### Produce a graphic of item fit statistics
+
+```{r infitMNSQ, message = FALSE}
+?infit.MNSQ
+infit.MNSQ(ADP)
+```
+
+## `infit.MNSQ()` cont.
+
+To plot the step fit instead of the overall item fit:
+```{r infitMNSQ2, message = FALSE}
+infit.MNSQ(ADP, params = "steps")
+```
+
+## `infit.MNSQ()` cont.
+
+To restrict which items are plotted on each graph:
+```{r infitMNSQ3, message = FALSE}
+infit.MNSQ(ADP, itemOrder = c(1, 2, 3, 4, 5, 6, 7), params = "steps")
+infit.MNSQ(ADP, itemOrder = 8:13, params = "steps")
+```
+
+## `CPC.graph()`
+### Produce graphics of cumulative probability curves
+
+```{r CPC.graph, eval = FALSE}
+?CPC.graph
+CPC.graph(ADP) # Note that a separate graph is produced for each item
+```
+
+## `CPC.graph()` cont.
+
+To selectively produce graphs use itemOrder:
+```{r CPC.graph2, message = FALSE}
+CPC.graph(ADP, itemOrder = c(1, 13))
+```
+
+## `CPC.graph()` cont.
+
+To plot your observed proportions, use observed and minCell:
+```{r CPC.graph3, message = FALSE, warning = FALSE}
+CPC.graph(ADP, itemOrder = 13, observed = TRUE)
+```
+
+## `CPC.graph()` cont.
+
+```{r CPC.graph4, message = FALSE}
+CPC.graph(ADP, itemOrder = 13, observed = TRUE, minCell = 3)
+```
+
+## `CPC.graph()` cont.
+
+You can also plot "vertically" as in Wilson (2005)!
+
+```{r CPC.graph5, message = FALSE}
+CPC.graph(ADP, itemOrder = 13, logitAxis = "y")
+```
+
+## `ICC.graph()`
+### Produce graphics of the item (or category) characteristic curves
+
+```{r ICC.graph, eval = FALSE}
+?ICC.graph
+
+ICC.graph(ADP) # produces a graph for each item
+```
+
+## `ICC.graph()` cont.
+
+itemOrder works as in the CPC.graph() function
+```{r ICC.graph2, message = FALSE}
+ICC.graph(ADP, itemOrder = c(5:6))
+```
+
+## `info.graph()`
+### Produce graphics of test and item information
+
+```{r info.graph, message = FALSE}
+?info.graph
+info.graph(ADP, type = "SEM")  # SEM is the default
+```
+
+## `info.graph()` cont.
+
+You can plot all observations (even incomplete ones) using 
+  `completeOnly = FALSE`
+  
+```{r info.graph2, message = FALSE}
+info.graph(ADP, type = "SEM", completeOnly = FALSE)
+
+```
+
+## `info.graph()` cont.
+
+For the test information curve:
+
+```{r info.graph3, message = FALSE}
+info.graph(ADP, type = "TIC")  # produces one graph
+```
+
+## `info.graph()` cont.
+
+For the item information curves: 
+
+```{r info.graph4, message = FALSE}
+info.graph(ADP, type = "IIC")  # produces 1 graph per item!
+```
+
+## `wm()`
+### A wrapper for the `wrightMap()` function
+
+```{r wm, message = FALSE}
+?wm
+wm(ADP) # organized in item order
+```
+
+## `wm()` cont.
+
+```{r wm2, message = FALSE}
+wm(ADP, byCat = TRUE) # organized in construct category order
+```
+
+## `wm()` cont.
+
+If you want to customize the output further, see the `wrightMap()` function 
+  documentation.  The function provided in this package is merely a wrapper.
+  
+```{r wrightMap, eval = FALSE}
+?wrightMap
+```
+
+## `Split.halves()`
+### Calculate the split halves reliability coefficient
+
+There is some data preprocessing that needs to happen before runnning 
+  `Split.halves()`.
+  
+1. You must split your item information and score objects in half.
+
+2. You must run `craschR()` on each half.
+
+```{r Split.halves, message = FALSE}
+item1 = ADPitem[c(2, 5, 7, 8, 10, 11), ]      # selects rows
+scores1 = ADPwide[ , c(2, 5, 7, 8, 10, 11)] # selects columns
+
+item2 = ADPitem[c(1, 3, 4, 6, 9, 12, 13), ]
+scores2 = ADPwide[ , c(1, 3, 4, 6, 9, 12, 13)]
+```
+
+## `Split.halves()` cont.
+
+```{r Split.halves2, message = FALSE}
+results1 = craschR(scores1, item1, ADPcons, writeout = FALSE)
+results2 = craschR(scores2, item2, ADPcons, writeout = FALSE)
+
+?Split.halves
+
+Split.halves(results1, results2)
+```
+
+## `mn.traj()`
+### Graph showing mean location trajectories by item
+
+```{r mn.traj, message = FALSE}
+?mn.traj
+mn.traj(ADP)
+```
+
+## `Sp.rho()`
+### Calculate Spearman's rho
+
+We need fully dichotomous data for this function.  A sample data set is provided
+  in the package.
+
+```{r Sp.rho, message = FALSE}
+?Sp.rho
+
+DIresults = craschR(scores = DIwide, itemInfo = DIitem, 
+                    consInfo = DIcons, writeout = FALSE)
+
+Sp.rho(DIresults, expOrder = c(14, 13, 12, 11, 10, 9, 8, 7, 
+                               6, 5, 4, 3, 2, 1))
+```
+
+# Future development
+
+## Future plans
+
+- Write estimation code instead of calling other packages?
+
+- Implement in BASS for reporting
+
+- `mirt` support
+
+- More flexibility/options in available functions:
+    + Rating scale model
+    + Graphic options (bin size, etc.)
+
+- New functions:
+    + DIF
+    + Import results from ConQuest, Stata, or other R packages
+    
+# Thanks!
+
+aea@berkeley.edu
+
+bearcenter.berkeley.edu
