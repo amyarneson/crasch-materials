@@ -37,7 +37,8 @@ Stage of adoption (abbreviated ADP) was 1 of 2 constructs measured for Amy's
 
 You will need to create 3 input files to run your analysis.  You may create an
   optional 4th file if you are collecting variables other than item responses.
-  The files are as follows:
+  The files are as follows (names in parentheses are the corresponding 
+  arguments in the `craschR` function):
   
 - construct information (`consInfo`),
 - item information (`itemInfo`),
@@ -61,11 +62,12 @@ Your construct information file will have:
 
 - a header row, 
 - 1 row for each construct, and
-- 3 + (number of categories) columns.
+- 3 columns for static construct information (ID, name, and abbreviation), and
+- a column for each category of your construct.
 
 *Open the `ADPcons.csv` file.*
 
-Confirm that the information displayed matches the table below.
+Confirm that the information in the file matches the table below.
 
 cons.ID | long.name         | short.name | cat1     | cat2      | cat3    | cat4        | cat5
 --------|-------------------|------------|----------|-----------|---------|-------------|----------
@@ -78,8 +80,8 @@ cons.ID | long.name         | short.name | cat1     | cat2      | cat3    | cat4
   construct.  It is best to keep the names short.  If you do not name your
   categories, you can simply call them "Level 1", "Level 2", etc. if you wish.
 - The `cons.ID` can be any positive integer.
-- When you create your own files, it is imperative that the column headings
-  exactly match what is provided in this file.  `R` is a case-senstive language,
+- **When you create your own files, it is imperative that the column headings
+  exactly match what is provided in this file.**  `R` is a case-senstive language,
   so the capitalization matters!
 - If you have more than one construct, give each its own row in the your construct
   information file and each a unique `cons.ID`.  (See Yukie or Amy if you are 
@@ -90,9 +92,10 @@ cons.ID | long.name         | short.name | cat1     | cat2      | cat3    | cat4
 
 *Open the `artifacts-adoption.pdf` and `ADPitem-INCOMPLETE.csv` files.*
 
-- Note that the `cons.ID` exactly matches what was specified in the 
-  `ADPcons.csv` file.  If you are measuring more than one construct, you will 
-  put in the ID associated with whatever construct that item was scored on.
+- Note that the `cons.ID` exactly matches what was specified in the construct
+  information file (in this case it is `ADPcons.csv`).  If you are measuring 
+  more than one construct, you will put in the ID associated with whatever 
+  construct that item was scored on.
 - The `item.type` and `fixed` will not play any part in your analysis.  These 
   exist for integration with the BASS web application.  You can fill in 
   `item.type` for your own records if you want.  The `fixed` column should be
@@ -111,9 +114,11 @@ item.ID | item.name | cons.ID | item.type | fixed | cat1 | cat2 | cat3 | cat4 | 
 knitr::include_graphics("/Users/Amy/OneDrive/Development/crasch-materials/figures/ADP-scoringGuide.PNG")
 ```
 
-*Take 5 minutes to fill in the rest of the rows of the file using the outcome
-  space tables provided in the `artifacts-adoption.pdf` file.  When finished,
-  compare what you built to the `ADPitem-KEY.csv` file.*
+**Exercise:**
+
+*Take 5 minutes to fill in the rest of the rows of the file using 
+  the outcome space tables provided in the `artifacts-adoption.pdf` file.  When 
+  finished, compare what you built to the `ADPitem-KEY.csv` file.*
 
 *Save your completed item information as `ADPitem.csv` in the same folder.  Be
   sure to change the file type to `CSV` in the "Save As" dialog box.*
@@ -132,22 +137,33 @@ knitr::include_graphics("/Users/Amy/OneDrive/Development/crasch-materials/figure
 - Give unique respondent IDs (alphanumeric characters) in the first column.
   List your items - with the same names that appear in your item information
   file - in the top header row.  Leave the top left corner cell *completely
-  blank*.  This configuration is known as *wide format*.
+  blank*.  This configuration - with respondents as rows and items as columns -
+  is known as *wide format*.
 - Score each response into a category/level of your construct according to your
   outcome space.  *If your outcome space changes during scoring, be sure to 
   update your item information to reflect that!*
-- Recall that categories are labeled starting at 1.  There should be no 0 scores
-  or scores higher than your highest category/level.
+- Recall that construct categories/level are labeled starting at 1.  There 
+  should not be any 0 scores or scores higher than your highest category/level.
+- If you used a survey tools to collect responses, you may need to rescore.
+  This can be done in Excel, Stata, R, or other data handling/spreadsheet 
+  program.  If you need help with this, see one of us for assistance!
 - Blanks or otherwise unscore-able responses must be coded as `NA` (all caps).
-  This is the `R` code for "missing", similar to the period in Stata.
+  This is the `R` code for "missing", similar to the period in Stata.  I
+  recommend you do your recoding in Excel or in R so that the missing responses
+  are coded correctly.  (e.g. Stata's missing code is "."; that won't fly in R.)
 
 ## Variable information
 
-The variable information file is the most flexibly structured file.  The values
+The variable information file is the most flexibly structured file.  Note that 
+  variables included in this file are those that are external to the measurement
+  of your target construct (background variables).
+
+The values
   for the first three respondents in the `ADPvars.csv` file are reproduced
   below.
 
-- `q1` is a code for the subject that the teacher taught in 2013.
+- `q1` is a code for the subject that the teacher taught in 2013.  There are 10
+  possible subjects (mathematics, fine arts, physical education, etc.).
 - `ELA/SS` is a dichotomized coding for q1.  I decided that English-Language 
   Arts (ELA) and Social Studies (SS) teachers would be most familiar with 
   teaching and scoring writing assignments.  So, I put them in one group and 
@@ -180,14 +196,18 @@ The variable information file is the most flexibly structured file.  The values
 # Importing the files into `R` using `read.csv()`
 
 To load your files into `R`, you will need to create an "object" and then refer
-  to those objects in the `craschR()` arguments.  *Arguments* are the options 
-  and objects that you put inside the parentheses in an `R` function.
+  to those objects in the `craschR()` arguments.
+  
+     - *Arguments* are the objects/values that you put inside the parentheses 
+       in an `R` function.
 
 *Open RStudio.*
 
 First, set your working directory to the folder where all of the tutorial
   documents exist.  You can do this using the "Files" tab in the bottom right
   window in RStudio or with a line of code.
+  
+**All four CSV files that we discussed must be in your working directory.**
 
 ```{r, include = FALSE}
 library(crasch)

@@ -1,0 +1,119 @@
+---
+title: 'crasch'
+author: "Amy E. Arneson"
+date: "1 November 2016"
+output: ioslides_presentation
+---
+
+```{r setup, include = FALSE}
+
+```
+
+# Introduction
+
+## Objectives
+
+- Learn how to obtain the development version of `crasch`
+- View "standard output" provided by the package
+- Provide feedback and suggestions for future development
+
+## Basics
+
+- What is `crasch`?
+
+    + `crasch` is an `R` package written to accompany *Constructing Measures* 
+      (Wilson, 2005).
+    + It is also the (future) reporting engine for the Berkeley Assessment 
+      System Software [http://bass.bearapps.org/](http://bass.bearapps.org/).
+
+- What is an `R` package?
+
+    + Freely available code for use in `R` written, maintained, and made 
+      available by an `R` user.
+
+- What is `R`?
+
+    + `R` is free statistical software (Mac, PC, or Unix) for computing and 
+       graphic production.
+    + [https://www.r-project.org](https://www.r-project.org)
+
+## IRT in `R`
+
+Item response theory (IRT) requires specialized statistical analyses, and these 
+types of functions are not included in the base `R` libraries.
+
+The following packages are well-documented and widely used for IRT analyses.
+
+- mirt (Chalmers, 2012)
+- **TAM** (Kiefer, Robitzsch, \& Wu, 2015)
+- eRm (Mair, Hatzinger, \& Maier, 2015)
+- ltm (Rizopoulos, 2006)
+- **WrightMap** (Torres Irribarra \& Freund, 2014)
+
+## `R` and RStudio
+
+- Download and install `R`:
+    + OSX: [http://cran.cnr.berkeley.edu/bin/macosx/](http://cran.cnr.berkeley.edu/bin/macosx/)
+    + Win: [http://cran.cnr.berkeley.edu/bin/windows/base/](http://cran.cnr.berkeley.edu/bin/windows/base/)
+    + Linux: [http://cran.cnr.berkeley.edu/bin/linux/](http://cran.cnr.berkeley.edu/bin/linux/)
+
+- Download and install RStudio (for a much friendlier `R` experience!)
+    + [https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/)
+    + Choose your OS under "Installers" and proceed as you would with any 
+      software installation.
+    
+- If you already have `R` on your machine, you may need to update to the latest 
+  version.  Use the links above to do so.
+
+## Demo materials
+
+- These slides, the associated RMarkdown file, and a script with all commands
+  are available at [https://github.com/amyarneson/crasch-materials/BEARseminar](https://github.com/amyarneson/crasch-materials/BEARseminar)
+  
+## Installing `crasch`
+
+```{r, eval = FALSE}
+# This first package allows you to install from github
+install.packages("devtools")
+
+# Install crasch
+devtools::install_github("amyarneson/crasch")
+# This may take a few minutes; multiple packages will be installed
+# You may see some warning messages, and that's okay!
+
+# Use the same command to update the package as changes are made.
+```
+
+# How it works
+
+## Input files
+
+## Installing/Updating the package
+
+## Current capabilities
+
+## Future plans
+
+# Standard analysis: Demo
+
+## Estimation
+
+## "Standard" output
+
+# Validity
+
+## Internal structure
+
+### Instrument level
+
+Wright Map arranged by theorized construct levels
+
+### Item level
+
+Mean locations
+
+### Item by group level
+
+DIF - not available yet :/
+
+## External relationships
