@@ -118,7 +118,6 @@ item.scores(SUPanalysis)
 
 # To graph proportions instead of frequencies, use freqs = FALSE
 item.scores(SUPanalysis, freqs = FALSE)
-
 ```
 
 Check out the Color Brewer website.  It is really helpful in determining color
@@ -160,6 +159,30 @@ item.scores(SUPanalysis, writeout = TRUE, imageType = "bmp")
 item.scores(SUPanalysis, writeout = TRUE, imageType = "tiff")
 ```
 
+
+## `wm()`
+### A wrapper for the `wrightMap()` function
+
+```{r wm, message = FALSE}
+?wm
+# The most relevant argument to change for our purposes is:
+  #    byCat
+
+wm(SUPanalysis) # organized in item order
+
+wm(SUPanalysis, byCat = TRUE) # organized in construct category order
+```
+
+You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
+
+If you want to customize the output further, see the `wrightMap()` function 
+  documentation.  The function provided in this package is merely a wrapper.
+  
+```{r wrightMap, eval = FALSE}
+?wrightMap
+```
+
+
 ## `pers.hist()`
 ### Produce a histogram of the estimated person locations with a normal curve overlaid
 
@@ -183,6 +206,37 @@ pers.hist(SUPanalysis, writeout = TRUE, imageType = "png")
 
 For a list of R color names: [http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf](http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf)
 
+
+## `infit.MNSQ()`
+### Produce a graphic of item fit statistics
+
+```{r infitMNSQ, message = FALSE}
+?infit.MNSQ
+
+# The most relevant arguments to change for our purposes are:
+  #    itemOrder
+  #    params
+
+infit.MNSQ(SUPanalysis)
+
+# To plot the step fit instead of the overall item fit:
+infit.MNSQ(SUPanalysis, params = "steps")
+
+# To restrict which items are plotted on each graph:
+infit.MNSQ(SUPanalysis, itemOrder = c(1, 2, 3, 4, 5, 6, 7), params = "steps")
+infit.MNSQ(SUPanalysis, itemOrder = 8:15, params = "steps")
+```
+
+You can change the colors and the write options as above.
+
+```{r infitMNSQ2, eval = FALSE}
+infit.MNSQ(SUPanalysis, itemOrder = 8:15, palette = "Spectral")
+# Graphical output omitted
+
+infit.MNSQ(SUP_MLE, writeout = TRUE, fileSuffix = "MLE", imageType = "tiff")
+```
+
+
 ## `KIDMAP()`
 ### Produce a KIDMAP graphic for a given respondent
 
@@ -193,6 +247,9 @@ For a list of R color names: [http://www.stat.columbia.edu/~tzheng/files/Rcolor.
 row.names(SUPscores)
 
 KIDMAP(SUPanalysis, 120)
+
+# You can make multiple KIDMAPs at once if you like:
+KIDMAP(SUPanalysis, c(119, 121, 126))
 ```
 
 You can change the colors and the write options as above.
@@ -227,34 +284,24 @@ head(item.analysis(SUPanalysis)[[1]])
 head(item.analysis(SUPanalysis)[[2]])
 ```
 
-## `infit.MNSQ()`
-### Produce a graphic of item fit statistics
 
-```{r infitMNSQ, message = FALSE}
-?infit.MNSQ
+## `ICC.graph()`
+### Produce graphics of the item (or category) characteristic curves
 
-# The most relevant arguments to change for our purposes are:
-  #    itemOrder
-  #    params
+```{r ICC.graph, eval = FALSE}
+?ICC.graph
 
-infit.MNSQ(SUPanalysis)
-
-# To plot the step fit instead of the overall item fit:
-infit.MNSQ(SUPanalysis, params = "steps")
-
-# To restrict which items are plotted on each graph:
-infit.MNSQ(SUPanalysis, itemOrder = c(1, 2, 3, 4, 5, 6, 7), params = "steps")
-infit.MNSQ(SUPanalysis, itemOrder = 8:15, params = "steps")
-```
-
-You can change the colors and the write options as above.
-
-```{r infitMNSQ2, eval = FALSE}
-infit.MNSQ(SUPanalysis, itemOrder = 8:15, palette = "Spectral")
+ICC.graph(SUPanalysis) # produces a graph for each item
 # Graphical output omitted
-
-infit.MNSQ(SUP_MLE, writeout = TRUE, fileSuffix = "MLE", imageType = "tiff")
 ```
+
+```{r ICC.graph2, message = FALSE}
+# To selectively produce graphs use itemOrder
+ICC.graph(SUPanalysis, itemOrder = c(5:6))
+```
+
+You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
+
 
 ## `CPC.graph()`
 ### Produce graphics of cumulative probability curves
@@ -276,26 +323,16 @@ CPC.graph(SUPanalysis) # Note that a separate graph is produced for each item
 # To selectively produce graphs use itemOrder
 CPC.graph(SUPanalysis, itemOrder = c(1, 15))
 
+# You can obtain category probabilities for specified theta values
+#   You can specify a single value or a vector using c()
+CPC.graph(SUPanalysis, itemOrder = 1, focusTheta = 1.5)
+
 # To plot your observed proportions, use observed and minCell
 CPC.graph(SUPanalysis, itemOrder = 15, observed = TRUE)
 CPC.graph(SUPanalysis, itemOrder = 15, observed = TRUE, minCell = 3)
-```
 
-You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
-
-## `ICC.graph()`
-### Produce graphics of the item (or category) characteristic curves
-
-```{r ICC.graph, eval = FALSE}
-?ICC.graph
-
-ICC.graph(SUPanalysis) # produces a graph for each item
-# Graphical output omitted
-```
-
-```{r ICC.graph2, message = FALSE}
-# itemOrder works as in the CPC.graph() function
-ICC.graph(SUPanalysis, itemOrder = c(5:6))
+# You can make "vertical" plots as is in the text using logitAxis = "y"
+CPC.graph(SUPanalysis, itemOrder = 1, logitAxis = "y")
 ```
 
 You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
@@ -312,6 +349,11 @@ You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
 
 info.graph(SUPanalysis, type = "SEM")  # SEM is the default
 info.graph(SUPanalysis, type = "TIC")  # produces one graph
+
+# The default is to plot only observed values for COMPLETE data
+#  You can also plot *all* observations
+info.graph(SUPanalysis, type = "SEM", completeOnly = FALSE)
+info.graph(SUPanalysis, type = "TIC", completeOnly = FALSE)
 ```
 
 ```{r info.graphSEM, eval = FALSE}
@@ -323,27 +365,6 @@ info.graph(SUPanalysis, type = "IIC")  # produces one graph for each item
 
 You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
 
-## `wm()`
-### A wrapper for the `wrightMap()` function
-
-```{r wm, message = FALSE}
-?wm
-# The most relevant argument to change for our purposes is:
-  #    byCat
-
-wm(SUPanalysis) # organized in item order
-
-wm(SUPanalysis, byCat = TRUE) # organized in construct category order
-```
-
-You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
-
-If you want to customize the output further, see the `wrightMap()` function 
-  documentation.  The function provided in this package is merely a wrapper.
-  
-```{r wrightMap, eval = FALSE}
-?wrightMap
-```
 
 ## `Split.halves()`
 ### Calculate the split halves reliability coefficient
@@ -374,18 +395,6 @@ results2 = craschR(scores2, item2, SUPcons, writeout = FALSE)
 Split.halves(results1, results2)
 ```
 
-## `mn.traj()`
-### Produce a graphic showing mean location trajectories by item
-
-```{r mn.traj, message = FALSE}
-mn.traj(SUPanalysis)
-```
-
-You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
-
-Note that the graphic is only a *summary* of the mean trajectories.  For your
-  papers, look at the mean locations within each item in the table provided
-  by this function or the one from `item.analysis()` (they should be identical).
 
 ## `Sp.rho()`
 ### Calculate Spearman's rho
@@ -403,6 +412,21 @@ Sp.rho(DIresults, expOrder = c(14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
 
 Note that Spearman's Rho is most easily interpretable for dichotomous data.  If
   you have polytomous data, consider something different for internal structure.
+
+
+## `mn.traj()`
+### Produce a graphic showing mean location trajectories by item
+
+```{r mn.traj, message = FALSE}
+mn.traj(SUPanalysis)
+```
+
+You can use `palette`, `writeout`, `imageType`, and `fileSuffix` as above.
+
+Note that the graphic is only a *summary* of the mean trajectories.  For your
+  papers, look at the mean locations within each item in the table provided
+  by this function or the one from `item.analysis()` (they should be identical).
+
 
 # Other (base `R`) functions
 
@@ -427,4 +451,50 @@ SUPanalysis$persPars # to view the person estimates
 
 cor(SUPvars$q3, SUPanalysis$persPars, use = "complete.obs")
 # "complete.obs" is necessary so that missing data is dropped
+```
+
+
+You can also use this for alternative forms analysis.  Let's pretend that 
+  the `results1` and `results2` analyses actually came from two separately
+  admininistered forms.  You can obtain the (unadjusted) correlation between
+  the person estimates from each form using `cor()`.
+  
+```{r altForms}
+cor(results1$persPars, results2$persPars)
+```
+
+## "DIF" (must be calculated externally)
+
+- Run two separate analyses in `crasch`, one for each group.  *Save the results
+  separately (use `fileSuffix`)!*
+- If you have polytomous items, you will have to manually "match" parameters.  
+  You should only consider pairs of item parameters *that have the same 
+  meaning.*
+  
+```{r DIFsetup, eval = FALSE}
+# I am going to run DIF for the groups I created based on subject taught:
+#   Group 1: English-Language Arts & Social Studies
+#   Group 2: everyone else
+View(SUPvars)
+
+# You can set up two entirely separate analyses by splitting up your scores file
+#   manually (externally in Excel).
+#   Alternatively, you can use R to figure out which rows go into each analysis
+table(SUPvars$CORE) # make sure there are only TWO groups
+
+group1 = which(SUPvars$CORE == "core")
+group2 = which(SUPvars$CORE == "non-core")
+  # These are vectors that have the row numbers for each group
+
+group1analysis = craschR(scores = SUPscores[group1, ], itemInfo = SUPitem, 
+                         consInfo = SUPcons, varsInfo = SUPvars, writeout = FALSE)
+group2analysis = craschR(scores = SUPscores[group2, ], itemInfo = SUPitem, 
+                         consInfo = SUPcons, varsInfo = SUPvars, writeout = FALSE)
+
+# You may receive errors.  These are often due to sample size issues.
+
+item.analysis(group1analysis, writeout = TRUE, fileSuffix = "_group1")
+item.analysis(group2analysis, writeout = TRUE, fileSuffix = "_group2")
+# Use the item.analysis files to determine which parameters you can include in
+#   your DIF analysis.
 ```

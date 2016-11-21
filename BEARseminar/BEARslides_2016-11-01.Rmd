@@ -532,4 +532,7 @@ Sp.rho(DIresults, expOrder = c(14, 13, 12, 11, 10, 9, 8, 7,
 
 aea@berkeley.edu
 
+Thanks to package contributors: David Torres Irribarra, Rebecca Freund, Yukie
+  Toyama, and Mark Wilson
+
 bearcenter.berkeley.edu
